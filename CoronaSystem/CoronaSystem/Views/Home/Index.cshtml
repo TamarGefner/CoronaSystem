@@ -1,8 +1,226 @@
 ﻿@{
     ViewData["Title"] = "Home Page";
 }
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vaccine Status</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels"></script>
+    <style>
+        .container {
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+        }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://docs.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
-</div>
+        .image-section {
+            flex: 1;
+        }
+
+        .buttons-section {
+            flex: 2;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: -210px;
+        }
+
+       
+
+        .buttons-section > div {
+            width: 33.33%;
+            display: flex;
+            justify-content: center;
+        }
+
+        .center {
+            display: flex;
+            justify-content: center;
+        }
+
+        .btn {
+            margin-top: 20px;
+            background-color: rgb(54, 162, 235);
+        }
+
+        .image-section {
+            display: flex; /* Use flexbox */
+            justify-content: center; /* Center horizontally */
+            align-items: center; /* Center vertically */
+            height: 90vh; /* Set a height for the container (adjust as needed) */
+        }
+
+        #image-container {
+            max-width: 100%; /* Ensure the image doesn't exceed container width */
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="image-section">
+            <div id="image-container" width="1700">
+                <img src="~/images/homePage.jpg" alt="HomePage Image" />
+            </div>
+        </div>
+        <div class="buttons-section">
+            <div class="left-side">
+                <a asp-controller="SickMembers" asp-action="Graph" class="btn btn-primary">Statistics</a>
+            </div>
+            <div class="center">
+                <canvas id="vaccineChart"></canvas>
+            </div>
+            <div class="right-side">
+                <a asp-controller="Members" asp-action="Index" class="btn btn-primary">Go to Members</a>
+            </div>
+        </div>
+    </div>
+
+
+    <script>
+        // Function to fetch vaccine data from the controller
+        function fetchVaccineData() {
+            fetch('/Vaccinations/GetVaccineData')
+                .then(response => response.json())
+                .then(data => {
+                    // Call function to update chart with the retrieved data
+                    updateChart(data.totalMembers, data.membersWithoutVaccine);
+                })
+                .catch(error => console.error('Error fetching vaccine data:', error));
+        }
+
+        // Function to update the doughnut chart with the retrieved data
+        function updateChart(totalMembers, membersWithoutVaccine) {
+            // Calculate percentage of members without vaccine
+            var percentWithoutVaccine = (membersWithoutVaccine / totalMembers) * 100;
+
+            // Chart.js configuration
+            var ctx = document.getElementById('vaccineChart').getContext('2d');
+            var vaccineChart = new Chart(ctx, {
+                type: 'doughnut', // Set chart type to doughnut
+                data: {
+                    labels: ['With Vaccine', 'Without Vaccine'],
+                    datasets: [{
+                        data: [totalMembers - membersWithoutVaccine, membersWithoutVaccine],
+                        backgroundColor: ['rgb(54, 162, 235)', 'rgb(255, 206, 86)'], 
+                    }]
+                },
+                options: {
+                    responsive: false,
+                    title: {
+                        display: true,
+                        text: 'Vaccine Status'
+                    },
+                    plugins: {
+                        datalabels: { // Configure the datalabels plugin
+                            display: true, // Display labels
+                            formatter: (value, ctx) => { // Format the label as percentage
+                                let sum = 0;
+                                let dataArr = ctx.chart.data.datasets[0].data;
+                                dataArr.map(data => {
+                                    sum += data;
+                                });
+                                let percentage = ((value / sum) * 100).toFixed(2) + "%";
+                                return percentage;
+                            },
+                            color: '#fff', // Text color
+                            font: { // Font settings
+                                weight: 'bold',
+                                size: 14
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        // Fetch vaccine data and update chart when the page loads
+        document.addEventListener('DOMContentLoaded', function () {
+            fetchVaccineData();
+        });
+    </script>
+</body>
+</html>
+
+@* <!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vaccine Status</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels"></script> <!-- Include chartjs-plugin-datalabels -->
+</head>
+<body>
+    <img src="~/images/homePage.png" alt="HomePage Image">
+    <a asp-controller="Members" asp-action="Index" class="btn btn-primary">Go to Members</a>
+    <a asp-controller="SickMembers" asp-action="Graph" class="btn btn-primary">Statistics</a>
+    <canvas id="vaccineChart" width="300" height="300"></canvas>
+
+    <script>
+        // Function to fetch vaccine data from the controller
+        function fetchVaccineData() {
+            fetch('/Vaccinations/GetVaccineData')
+                .then(response => response.json())
+                .then(data => {
+                    // Call function to update chart with the retrieved data
+                    updateChart(data.totalMembers, data.membersWithoutVaccine);
+                })
+                .catch(error => console.error('Error fetching vaccine data:', error));
+        }
+
+        // Function to update the doughnut chart with the retrieved data
+        function updateChart(totalMembers, membersWithoutVaccine) {
+            // Calculate percentage of members without vaccine
+            var percentWithoutVaccine = (membersWithoutVaccine / totalMembers) * 100;
+
+            // Chart.js configuration
+            var ctx = document.getElementById('vaccineChart').getContext('2d');
+            var vaccineChart = new Chart(ctx, {
+                type: 'doughnut', // Set chart type to doughnut
+                data: {
+                    labels: ['With Vaccine', 'Without Vaccine'],
+                    datasets: [{
+                        data: [totalMembers - membersWithoutVaccine, membersWithoutVaccine],
+                        backgroundColor: ['rgb(54, 162, 235)', 'rgb(255, 206, 86)'], // Change pink to yellow
+                    }]
+                },
+                options: {
+                    responsive: false,
+                    title: {
+                        display: true,
+                        text: 'Vaccine Status'
+                    },
+                    plugins: {
+                        datalabels: { // Configure the datalabels plugin
+                            display: true, // Display labels
+                            formatter: (value, ctx) => { // Format the label as percentage
+                                let sum = 0;
+                                let dataArr = ctx.chart.data.datasets[0].data;
+                                dataArr.map(data => {
+                                    sum += data;
+                                });
+                                let percentage = ((value / sum) * 100).toFixed(2) + "%";
+                                return percentage;
+                            },
+                            color: '#fff', // Text color
+                            font: { // Font settings
+                                weight: 'bold',
+                                size: 14
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        // Fetch vaccine data and update chart when the page loads
+        document.addEventListener('DOMContentLoaded', function () {
+            fetchVaccineData();
+        });
+    </script>
+</body>
+</html>
+ *@

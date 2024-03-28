@@ -1,0 +1,159 @@
+﻿@using System.Globalization
+
+@{
+    ViewData["Title"] = "Sick Member Graph";
+}
+@model int[]
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        h1 {
+            text-align: center;
+            margin-top: 50px; /* Adjust top margin as needed */
+            font-family: 'Roboto', sans-serif; /* Beautiful font from Google Fonts */
+            font-weight: 700; /* Bold font weight */
+            color: #333; /* Dark gray font color */
+        }
+        /* Style for "Back to List" link */
+        .back-to-list {
+            position: absolute; /* Position absolute */
+            color: #007bff; /* Dark blue font color */
+            text-decoration: none; /* Remove underline */
+            font-size: 20px; /* Icon font size */
+        }
+    
+    </style>
+
+</head>
+<body>
+<h1><span class="blue-dot"> <span class="yellow-dot"></span></span>Active Patients <span class="yellow-dot"><span class="blue-dot"></span></h1>
+
+<div>
+        <a class="back-to-list" asp-action="Index" asp-controller="Home">
+            <i class="fas fa-arrow-left"></i> <!-- Font Awesome back icon -->
+        </a> 
+        <br />
+    <label for="year">Year:</label>
+    <select id="year">
+        @for (int i = DateTime.Now.Year; i >= 2000; i--)
+        {
+            if (i == DateTime.Now.Year)
+            {
+                <option value="@i" selected>@i</option>
+            }
+            else
+            {
+                <option value="@i">@i</option>
+            }
+        }
+    </select>
+
+    <label for="month">Month:</label>
+    <select id="month">
+        @for (int i = 1; i <= 12; i++)
+        {
+            var monthName = DateTimeFormatInfo.CurrentInfo.GetMonthName(i);
+            if (i == DateTime.Now.Month)
+            {
+                <option value="@i" selected>@monthName</option>
+            }
+            else
+            {
+                <option value="@i">@monthName</option>
+            }
+        }
+    </select>
+</div>
+
+
+
+<canvas id="sickMemberChart" width="800" height="360"></canvas>
+</body>
+@section Scripts {
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.7.0/chart.min.js"></script>
+    <script>
+        // Function to render the initial chart
+        function renderInitialChart() {
+            console.log("initial");
+            var year = new Date().getFullYear(); // Get the current year
+            var month = new Date().getMonth() + 1; // Get the current month (add 1 because months are zero-based)
+            fetchData(year, month); // Fetch data for the current year and month
+        }
+
+        // Function to fetch data and render the chart
+        function fetchData(year, month) {
+            console.log("fetch");
+            fetch(`/SickMembers/ShowGraph?year=${year}&month=${month}`)
+                .then(response => response.json())
+                .then(data => {
+                    renderChart(data);
+                })
+                .catch(error => console.error('Error:', error));
+        }
+
+        // Function to render the chart
+        // Function to render the chart
+        function renderChart(data) {
+            var ctx = document.getElementById('sickMemberChart').getContext('2d');
+            console.log(window.sickMemberChart.data)
+            // Check if the chart instance is already defined
+            if (window.sickMemberChart.data != null) {
+                window.sickMemberChart.data.labels = data.labels;
+                window.sickMemberChart.data.datasets[0].data = data.data;
+                window.sickMemberChart.update(); // Update the chart with new data
+            } else {
+                // Chart instance is not defined, create a new chart
+                if (data && Array.isArray(data.labels) && Array.isArray(data.data)) {
+                    window.sickMemberChart = new Chart(ctx, {
+                        type: 'bar', // Use 'bar' type for bar graph
+                        data: {
+                            labels: Array.from({ length: data.labels.length }, (_, i) => data.labels[i]),
+                            datasets: [{
+                                label: 'Active Sick Members',
+                                data: data.data,
+                                backgroundColor: 'rgba(54, 162, 235,0.2)',
+                                borderColor: 'rgba(54, 162, 235,1)',
+                                borderWidth: 1
+                            }]
+                        },
+                        options: {
+                            scales: {
+                                y: {
+                                    beginAtZero: true,
+                                    ticks: {
+                                    precision: 0 // Display integers only
+                                }
+                                }
+                            }
+                        }
+                    });
+                } else {
+                    console.error('Invalid data format:', data);
+              }
+            }
+        }
+
+
+
+        // Fetch data and render chart when the page loads
+        document.addEventListener('DOMContentLoaded', function () {
+            renderInitialChart(); // Render the initial chart
+        });
+        // Event listener for when the year or month combo boxes change
+        document.getElementById('year').addEventListener('change', function () {
+            var year = this.value; // Get the selected year
+            var month = document.getElementById('month').value; // Get the selected month
+            fetchData(year, month); // Fetch data and render chart for the selected year and month
+        });
+
+        document.getElementById('month').addEventListener('change', function () {
+            var year = document.getElementById('year').value; // Get the selected year
+            var month = this.value; // Get the selected month
+            fetchData(year, month); // Fetch data and render chart for the selected year and month
+        });
+
+    </script>
+}

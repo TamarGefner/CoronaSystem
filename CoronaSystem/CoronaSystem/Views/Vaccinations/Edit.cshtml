@@ -1,0 +1,161 @@
+﻿@model CoronaSystem.Models.Vaccination
+
+@{
+    ViewData["Title"] = "Edit";
+}
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        /* Style for "Back to List" link */
+        .back-to-list {
+            position: absolute; /* Position absolute */
+            color: #007bff; /* Dark blue font color */
+            text-decoration: none; /* Remove underline */
+            font-size: 20px; /* Icon font size */
+        }
+        /* Style for form container */
+        .form-container {
+            background-color: #f0f8ff; /* Light blue background */
+            padding: 20px; /* Padding */
+            border-radius: 10px; /* Rounded corners */
+        }
+
+        .control-label {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; /* Font family */
+            color: black; /* Dark blue font color */
+            font-weight: bold; /* Bold font */
+        }
+
+        .form-container {
+            background-color: #f0f8ff; /* Light blue background */
+            padding: 20px; /* Padding */
+            border-radius: 10px; /* Rounded corners */
+        }
+
+        /* Style for form */
+        form {
+            margin: auto; /* Center form */
+            max-width: 400px; /* Maximum width */
+        }
+
+        .form-group {
+            margin-bottom: 20px; /* Increase spacing between form groups */
+        }
+
+
+        /* Style for form input fields */
+        .form-control {
+            margin-bottom: 15px; /* Margin between input fields */
+            width: 100%; /* Set width of input fields */
+        }
+
+        /* Style for form labels */
+        .control-label {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; /* Font family */
+            color: black; /* Dark blue font color */
+            font-weight: bold; /* Bold font */
+        }
+
+        /* Style for submit button */
+        .btn-primary {
+            background-color: #007bff; /* Dark blue background */
+            color: #fff; /* White font color */
+            border: none; /* Remove border */
+            padding: 10px 20px; /* Padding */
+            border-radius: 5px; /* Rounded corners */
+            cursor: pointer; /* Cursor on hover */
+        }
+
+        /* Style for alert message */
+        .alert {
+            color: red; /* Red font color */
+            margin-top: 10px; /* Margin from top */
+        }
+
+        /* Style for "Back to List" link */
+        .back-to-list {
+            position: absolute; /* Position absolute */
+            color: #007bff; /* Dark blue font color */
+            text-decoration: none; /* Remove underline */
+            font-size: 20px; /* Icon font size */
+        }
+
+        h1 {
+            text-align: center;
+            margin-top: 50px; /* Adjust top margin as needed */
+            font-family: 'Roboto', sans-serif; /* Beautiful font from Google Fonts */
+            font-weight: 700; /* Bold font weight */
+            color: #333; /* Dark gray font color */
+        }
+        /* Style for form input fields */
+        .form-control-line {
+            border: none; /* Remove border */
+            border-bottom: 1px solid #ccc; /* Bottom border */
+            background-color: transparent; /* Transparent background */
+            border-radius: 0; /* Remove border radius */
+            padding: 5px 0; /* Padding */
+            box-shadow: none; /* Remove box shadow */
+            transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out; /* Transition effect */
+        }
+
+            .form-control-line:focus {
+                border-color: #007bff; /* Border color on focus */
+                box-shadow: none; /* Remove box shadow on focus */
+            }
+    </style>
+</head>
+<body>
+    <h1> <span class="blue-dot"> <span class="yellow-dot"></span></span>Edit Vaccination<span class="yellow-dot"><span class="blue-dot"></span></h1>
+    <!-- "Back to List" link with icon -->
+    <a asp-action="Index" asp-route-IdNumber="@ViewData["IdNumber"]">
+        <i class="fas fa-arrow-left"></i> <!-- Font Awesome back icon -->
+    </a>
+    <br />
+    <br />
+    <div class="form-container">
+        <div class="row">
+            <form asp-action="Edit">
+                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label asp-for="IdNumber" class="control-label">ID:</label>
+                            <input asp-for="IdNumber" class="form-control" readonly />
+                            <span asp-validation-for="IdNumber" class="text-danger"></span>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label asp-for="ReleaseDate" class="control-label">Date of receiving the vaccine:</label>
+                            <input asp-for="ReleaseDate" class="form-control" />
+                            <span asp-validation-for="ReleaseDate" class="text-danger"></span>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label asp-for="Manufacturer" class="control-label">Manufacturer:</label>
+                            <input asp-for="Manufacturer" class="form-control" />
+                            <span asp-validation-for="Manufacturer" class="text-danger"></span>
+                        </div>
+                    </div>
+                </div>
+                <br />
+                <div class="form-group">
+                    <input type="submit" value="Save" class="btn btn-primary" />
+                </div>
+
+            </form>
+
+        </div>
+    </div>
+
+
+    <div>
+    </div>
+</body>
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
