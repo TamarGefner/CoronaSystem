@@ -46,7 +46,7 @@ if the member was already sick then will be open a pgae that represents the data
 ![image](https://github.com/TamarGefner/CoronaSystem/assets/116760923/92990da4-39ee-42e5-bf27-a8766e0673e8)
 
 
-Bobus : The statictick page:
+Bonus : The statictick page:
 its a graph who show how many active member were every day in a mounth. the default is the current month and year but there is option to change it
 
 ![image](https://github.com/TamarGefner/CoronaSystem/assets/116760923/f17dfd00-bdfa-4636-a83d-dfc078138d83)
